@@ -9,9 +9,9 @@ typedef enum {
 }bool;
 
 typedef struct {
-    double length;
-    double width;
-    double height;
+    double _length;
+    double _width;
+    double _height;
 }Box;
 
 
@@ -28,8 +28,9 @@ typedef struct
 }Shelf;
 
 void _ZN5Shelf6setBoxEiRK3Box(Shelf* this, int index, const Box* const dims);
-double getVolume(const Shelf* this);
-void printShelf(const Shelf* this);
+double _ZNK5Shelf9getVolumeEv(const Shelf* this);
+void _ZNK5Shelf5printEv(const Shelf* this);
+void _ZN5ShelfD1Ev(Shelf* this);
 
 #endif
 
