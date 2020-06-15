@@ -1,7 +1,5 @@
 #ifndef __CPP2C_ENCAPSULATION_DEFS_H__
 #define __CPP2C_ENCAPSULATION_DEFS_H__
-#define NUM_BOXES 3
-#define DEF_MSG "The total volume held on the shelf is"
 extern const char* _ZN5Shelf7messageE;
 typedef enum {
     false,
@@ -15,16 +13,18 @@ typedef struct {
 }Box;
 
 
-void _ZN3BoxC1Ev(Box* this);
-void _ZN3BoxC1Ed(Box* this, double dim);
-void _ZN3BoxC1Eddd(Box* this, double l, double w, double h);
-void _ZNK3Box5printEv(const Box* this);
-Box _ZN3BoxmLEd(Box* this, double multi);
-void _ZN3BoxD1Ev(const Box* this);
+void _ZN3BoxC1Esv(Box* this);
+void _ZN3BoxC1Esd(Box* this, double dim);
+void _ZN3BoxC1Esddd(Box* this, double l, double w, double h);
+void _ZNK3Box5printEsv(const Box* const this);
+Box _ZN3BoxmLEsd(Box* this, double multi);
+const Box* const _ZN3BoxC1EsRKS(Box* this, const Box* const other);
+
+void _ZN3BoxD1Esv(const Box* this);
 
 typedef struct
 {
-    Box boxes[NUM_BOXES];
+    Box boxes[3];
 }Shelf;
 
 void _ZN5Shelf6setBoxEiRK3Box(Shelf* this, int index, const Box* const dims);
