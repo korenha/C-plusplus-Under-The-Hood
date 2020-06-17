@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "cpp2c_encapsulation_defs.h"
+#include <string.h>
 const char* _ZN5Shelf7messageE = "The total volume held on the shelf is";
 
 
@@ -84,4 +85,10 @@ void _ZN5ShelfD1Ev(Shelf* this)
     _ZN3BoxD1Esv(&this->boxes[2]);
     _ZN3BoxD1Esv(&this->boxes[1]);
     _ZN3BoxD1Esv(&this->boxes[0]);
+}
+
+const Box* const _ZN3BoxaSEsRKS3Box(Box* this, const Box* const other)
+{
+    memcpy((void*)this,other,sizeof(*this));
+    return this;
 }

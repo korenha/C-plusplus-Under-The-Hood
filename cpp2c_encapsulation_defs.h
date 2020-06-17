@@ -19,6 +19,7 @@ void _ZN3BoxC1Esddd(Box* this, double l, double w, double h);
 void _ZNK3Box5printEsv(const Box* const this);
 Box _ZN3BoxmLEsd(Box* this, double multi);
 const Box* const _ZN3BoxC1EsRKS(Box* this, const Box* const other);
+const Box* const _ZN3BoxaSEsRKS3Box(Box* this, const Box* const other);
 
 void _ZN3BoxD1Esv(const Box* this);
 
