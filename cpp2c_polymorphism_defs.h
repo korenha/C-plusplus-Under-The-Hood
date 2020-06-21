@@ -1,26 +1,28 @@
 #ifndef __CPP2C_POLYMORPHISM_H__
 #define __CPP2C_POLYMORPHISM_H__
 #include <stdio.h>
-/*typedef enum ClassName
-{
-    E_TextFormatter,
-    E_DefaultTextFormatter,
-    E_PrePostFixer,
-    E_PrePostDollarFixer,
-    E_PrePostHashFixer,
-    E_PrePostFloatDollarFixer,
-    E_PrePostChecker,
-    E_Multiplier
-}ClassName;*/
+typedef void(*pDCtor)(void*);
+typedef void(*pPrintCHar)(void*,const char*);
+typedef void(*pPrintLong)(void*,long,char);
+typedef char(*pGetDefault)(void*);
+extern void*(*TextFormatterVirtualTAble[2])(void*);
+extern void*(*DefaultTextFormatterVTable[2])(void*);
+extern void*(*PrePostFixerVTable[4])(void*);
+extern void*(*PrePostDollarFixerVTable[4])(void*);
+extern void*(*PrePostHashFixerVTable[4])(void*);
+extern void*(*PrePostFloatDollarFixerVTable[4])(void*);
+extern void*(*PrePostCheckerVTable[4])(void*);
+extern void*(*MultiplierVTable[2])(void*);
+extern int next_id;
 
-typedef enum FuncName
+
+        typedef enum FuncName
 {
     E_DTOR,
     E_PRINT_CONST_CHAR,
     E_PRINT_LONG_AND_CHAR,
     E_GET_DEFAULT
 }FuncName;
-extern int next_id;
 /*
 inline void printFunc(const char* fname)
 {
@@ -35,11 +37,9 @@ typedef struct
 
 
 
-void TextFormatterD(TextFormatter* this);
+void TextFormatterD(void *pThis);
 void TextFormatterC(TextFormatter* this);
-void printT(TextFormatter* this,const char* text);
-void*(*TextFormatterVirtualTAble[2])(void*)  = {(void *(*)(void *)) TextFormatterD, (void *(*)(void *)) printT};
-
+/*void printT(void *pThis, const char* text);*/
 /*/// DefaultTextFormatter ///////////*/
 typedef struct
 {
@@ -50,14 +50,12 @@ typedef struct
 
 }DefaultTextFormatter;
 
-void DefaultTextFormatterD(DefaultTextFormatter* this);
+void DefaultTextFormatterD(void *pThis);
 void DefaultTextFormatterCC(DefaultTextFormatter* this,const DefaultTextFormatter* other);
 const DefaultTextFormatter* _ZNasDefaultTextFormatter(DefaultTextFormatter * this,const DefaultTextFormatter*);
 void DefaultTextFormatterC(DefaultTextFormatter * this);
-void printDefaultText(DefaultTextFormatter * this,const char* text);
+void printDefaultText(void *pThis, const char* text);
 
-void*(*DefaultTextFormatterVTable[2])(void*)  = {(void *(*)(void *)) DefaultTextFormatterD,
-                                                 (void *(*)(void *)) printDefaultText};
 
 
  /*       static int getId() {obj.next_id++; }*/
@@ -78,16 +76,14 @@ typedef struct
 void PrePostFixerC(PrePostFixer *this, const char* prefix, const char* postfix);
 void PrePostFixerCC(PrePostFixer *this, const PrePostFixer* other);
 
-void PrePostFixerD(PrePostFixer *this);/*virtual*/
+void PrePostFixerD(void *pThis);/*virtual*/
 
-void printPrePost(const PrePostFixer* this, const char *text);/*virtual*/
+void printPrePost(void *pThis, const char *text);/*virtual*/
 
-void printPrePostLong(const PrePostFixer* this,long num, char symbol);/*virtual first*/
+void printPrePostLong(void *pThis, long num, char symbol);/*virtual first*/
 
-char getDefaultSymbol(const PrePostFixer* this);/*virtual first*/
+char getDefaultSymbol(void *pThis);/*virtual first*/
 
-void*(*PrePostFixerVTable[4])(void*)  = {(void *(*)(void *)) PrePostFixerD, (void *(*)(void *)) printPrePost,
-                                         (void *(*)(void *)) printPrePostLong, (void *(*)(void *)) getDefaultSymbol};
 
 /*/// PrePostFixer Defs ///////////*/
 
@@ -116,7 +112,6 @@ inline void PrePostFixer::print_num(long num, char symbol) const
 
 */
 /*/// PrePostDollarFixer ///////////*/
-extern const char DEFAULT_SYMBOL;
 typedef struct
 {
     PrePostFixer par;
@@ -124,15 +119,12 @@ typedef struct
 
 void PrePostDollarFixerC(PrePostDollarFixer* this,const char* prefix, const char* postfix);
 void PrePostDollarFixerCC(PrePostDollarFixer* this,const PrePostDollarFixer* const other);
-void PrePostDollarFixerD(PrePostDollarFixer* this);/*virtual*/
+void PrePostDollarFixerD(void *pThis);/*virtual*/
 
-void printPrePostDollarFixerInt(const PrePostDollarFixer* const this,int num, char symbol);
-void printPrePostDollarFixerLong(const PrePostDollarFixer* const this,long num, char symbol);/*virtual*/
-void printPrePostDollarFixerDouble(const PrePostDollarFixer* const this,double num, char symbol);
-char getDefaultSymbolPrePostDollarFixer(const PrePostDollarFixer* const this);/*virtual*/
-void*(*PrePostDollarFixerVTable[4])(void*)  = {(void *(*)(void *)) PrePostDollarFixerD, (void *(*)(void *)) printPrePost,
-                                               (void *(*)(void *)) printPrePostDollarFixerLong,
-                                               (void *(*)(void *)) getDefaultSymbolPrePostDollarFixer};
+void printPrePostDollarFixerInt(PrePostDollarFixer *this, int num, char symbol);
+void printPrePostDollarFixerLong(void *pThis, long num, char symbol);/*virtual*/
+void printPrePostDollarFixerDouble(PrePostDollarFixer *this, double num, char symbol);
+char getDefaultSymbolPrePostDollarFixer(void *pThis);/*virtual*/
 
 
 /*/// PrePostHashFixer ///////////*/
@@ -141,19 +133,15 @@ typedef struct
     PrePostDollarFixer par;
     int m_precision;
 }PrePostHashFixer;
-extern const char DEFAULT_SYMBOLHash;
 
 void PrePostHashFixerC(PrePostHashFixer* this,int prc);
-void PrePostHashFixerCC(PrePostHashFixer* this,int prc);
-void PrePostHashFixerD(PrePostHashFixer* this);/*virtual*/
+void PrePostHashFixerCC(PrePostHashFixer* this,const PrePostHashFixer* other);
+void PrePostHashFixerD(void *pThis);/*virtual*/
 
-void printPrePostHashFixerInt(const PrePostHashFixer* const this,int num, char symbol);
-void printPrePostHashFixerLong(const PrePostHashFixer* const this,long num, char symbol);/*virtual*/
-char getDefaultSymbolPrePostHashFixer(const PrePostHashFixer* const this);/*virtual*/
+void printPrePostHashFixerInt(PrePostHashFixer *this, int num, char symbol);
+void printPrePostHashFixerLong(void *pThis, long num, char symbol);/*virtual*/
+char getDefaultSymbolPrePostHashFixer(void *pThis);/*virtual*/
 
-void*(*PrePostHashFixerVTable[4])(void*)  = {(void *(*)(void *)) PrePostHashFixerD, (void *(*)(void *)) printPrePost,
-                                             (void *(*)(void *)) printPrePostHashFixerLong,
-                                             (void *(*)(void *)) getDefaultSymbolPrePostHashFixer};
 
 /*/// PrePostHashFixer Defs ///////////*/
 
@@ -170,20 +158,15 @@ typedef struct
 {
     PrePostDollarFixer par;
 }PrePostFloatDollarFixer;
-extern const char DEFAULT_SYMBOLFloatDollar;
 
 void PrePostFloatDollarFixerC(PrePostFloatDollarFixer* this, const char* prefix, const char* postfix);
 void PrePostFloatDollarFixerCC(PrePostFloatDollarFixer* this, const PrePostFloatDollarFixer* const other);
-void PrePostFloatDollarFixerD(PrePostFloatDollarFixer* this);/*virtual*/
-void printPrePostFloatDollarFixerFloat(const PrePostFloatDollarFixer* const this,float num);
-void printPrePostFloatDollarFixerFloatChar(const PrePostFloatDollarFixer* const this,float num, char symbol);
-char getDefaultSymbolPrePostFloatDollarFixer(const PrePostFloatDollarFixer* const this);/*virtual*/
+void PrePostFloatDollarFixerD(void *pThis);/*virtual*/
+void printPrePostFloatDollarFixerFloat(PrePostFloatDollarFixer *this, float num);
+void printPrePostFloatDollarFixerFloatChar(PrePostFloatDollarFixer *this, float num, char symbol);
+char getDefaultSymbolPrePostFloatDollarFixer(void *pThis);/*virtual*/
 
 
-void*(*PrePostFloatDollarFixerVTable[4])(void*)  = {(void *(*)(void *)) PrePostFloatDollarFixerD,
-                                                    (void *(*)(void *)) printPrePost,
-                                                    (void *(*)(void *)) printPrePostHashFixerLong,
-                                                    (void *(*)(void *)) getDefaultSymbolPrePostFloatDollarFixer};
 
 
 /*/// PrePostChecker ///////////*/
@@ -194,18 +177,15 @@ typedef struct
 
 void PrePostCheckerC(PrePostChecker* this);
 void PrePostCheckerCC(PrePostChecker* this, const PrePostChecker* const other);
-void PrePostCheckerD(PrePostChecker* this);/*virtual*/
+void PrePostCheckerD(void *pThis);/*virtual*/
     
-void printThisSymbolUsingFunc(const PrePostChecker* const this);
-void printThisSymbolDirectly(const PrePostChecker* const this);
-void printDollarSymbolByCastUsingFunc(const PrePostChecker* const this);
-void printDollarSymbolByScopeUsingFunc(const PrePostChecker* const this);
-void printDollarSymbolByCastDirectly(const PrePostChecker* const this);
-void printDollarSymbolByScopeDirectly(const PrePostChecker* const this);
+void printThisSymbolUsingFunc(PrePostChecker *this);
+void printThisSymbolDirectly(PrePostChecker *this);
+void printDollarSymbolByCastUsingFunc(PrePostChecker *this);
+void printDollarSymbolByScopeUsingFunc(PrePostChecker *this);
+void printDollarSymbolByCastDirectly(PrePostChecker *this);
+void printDollarSymbolByScopeDirectly(PrePostChecker *this);
 
-void*(*PrePostCheckerVTable[4])(void*)  = {(void *(*)(void *)) PrePostCheckerD, (void *(*)(void *)) printPrePost,
-                                           (void *(*)(void *)) printPrePostHashFixerLong,
-                                           (void *(*)(void *)) getDefaultSymbolPrePostFloatDollarFixer};
 
 /*/// Multiplier ///////////*/
 typedef struct
@@ -218,21 +198,20 @@ typedef struct
 void MultiplierD(Multiplier* this);
 int getTimes(const Multiplier* const this);
 void setTimes(Multiplier* this,int);*/
-void printMultiplier(const Multiplier* this,const char*);
+void MultiplierD(void* pThis);
+void MultiplierCC(Multiplier* this,const Multiplier* other);
+void printMultiplier(void *pThis, const char *text);/*virtual*/
+
 
 
 /*/// Multiplier Defs ///////////*/
-
 /*inline Multiplier::Multiplier(int t)
 :   times(t)
 {
     printf("--- Multiplier CTOR: times = %d\n", times);
 }
 
-inline Multiplier::~Multiplier()
-{
-    printf("--- Multiplier DTOR: times = %d\n", times);
-}
+
     
 inline int Multiplier::getTimes() const
 {

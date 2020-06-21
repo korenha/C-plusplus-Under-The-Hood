@@ -1,183 +1,258 @@
 #include "cpp2c_polymorphism_defs.h"
-
+#include <stdlib.h>
 
 
 
 
 void doPrePostFixer()
 {
+    PrePostFixer angleBrackets;
     printf("\n--- start doPrePostFixer() ---\n\n");
 
-    PrePostFixer angleBrackets("<<< ", " >>>");
-    angleBrackets.print("Hello World!");
-    angleBrackets.print(-777);
-    angleBrackets.print(350, '#');
-    angleBrackets.print(static_cast<long int>(3.14));
+    PrePostFixerC(&angleBrackets,"<<< ", " >>>");
+    printPrePost(&angleBrackets,"Hello World!");
+    printPrePostLong(&angleBrackets,-777,'\0');
+    printPrePostLong(&angleBrackets,350, '#');
+
+    printPrePostLong(&angleBrackets,(long)3.14, '\0');
 
     printf("\n--- end doPrePostFixer() ---\n\n");
+    PrePostFixerD(&angleBrackets);
 }
 
 void doPrePostDollarFixer()
 {
+    PrePostDollarFixer asterisks;
+
     printf("\n--- start doPrePostDollarFixer() ---\n\n");
 
-    PrePostDollarFixer asterisks("***** ", " *****");
-    asterisks.print(-777);
-    asterisks.print(350, '#');
-    asterisks.print(3.14f);
+    PrePostDollarFixerC(&asterisks,"***** ", " *****");
+    printPrePostDollarFixerInt(&asterisks,-777,'$');
+    printPrePostDollarFixerInt(&asterisks,350, '#');
+    printPrePostDollarFixerDouble((PrePostDollarFixer *) &asterisks, 3.14f, '$');
 
     printf("\n--- end doPrePostDollarFixer() ---\n\n");
+    PrePostDollarFixerD(&asterisks);
+
 }
 
 void doPrePostChecker()
 {
-    printf("\n--- start doPrePostChecker() ---\n\n");
-
     PrePostChecker check;
-    check.printThisSymbolUsingFunc();
-    check.printThisSymbolDirectly();
-    check.printDollarSymbolByCastDirectly();
-    check.printDollarSymbolByScopeDirectly();
-    check.printDollarSymbolByCastUsingFunc();
-    check.printDollarSymbolByScopeUsingFunc();
+
+    printf("\n--- start doPrePostChecker() ---\n\n");
+    PrePostCheckerC(&check);
+
+    printThisSymbolUsingFunc(&check);
+    printThisSymbolDirectly(&check);
+    printDollarSymbolByCastDirectly(&check);
+    printDollarSymbolByScopeDirectly(&check);
+    printDollarSymbolByCastUsingFunc(&check);
+    printDollarSymbolByScopeUsingFunc(&check);
 
     printf("\n--- end doPrePostChecker() ---\n\n");
+    PrePostCheckerD(&check);
 }
 
 void doPrePostFloatDollarFixer()
 {
-    printf("\n--- start doPrePostFloatDollarFixer() ---\n\n");
+    PrePostFloatDollarFixer hashes;
+    PrePostDollarFixer hashes2;
 
-    PrePostFloatDollarFixer hashes("### ", " ###");
-    hashes.print(-777);
-    hashes.print(350, '#');
-    hashes.print(3.14f);
-
-    PrePostDollarFixer hashes2(hashes);
-    hashes2.print(7.5);
-    hashes2.print(100);
 
     printf("\n--- start doPrePostFloatDollarFixer() ---\n\n");
+
+    PrePostFloatDollarFixerC(&hashes,"### ", " ###");
+    printPrePostFloatDollarFixerFloat(&hashes, -777);
+    printPrePostFloatDollarFixerFloatChar( &hashes, 350, '#');
+    printPrePostFloatDollarFixerFloat( &hashes, 3.14f);
+
+    PrePostDollarFixerCC(&hashes2, (const PrePostDollarFixer *) &hashes);
+    printPrePostDollarFixerDouble(&hashes2,7.5,'$');
+    printPrePostDollarFixerInt(&hashes2,100,'$');
+
+    printf("\n--- start doPrePostFloatDollarFixer() ---\n\n");
+    PrePostDollarFixerD(&hashes2);
+    PrePostFloatDollarFixerD(&hashes);
 }
 
-void runAsPrePostFixerRef(const PrePostFixer& pp)
+void runAsPrePostFixerRef(PrePostFixer* pp)
 {
     printf("\n--- start runAsPrePostFixerRef() ---\n\n");
 
-    pp.printT(123);
-
+    ((pPrintLong)((((TextFormatter*)pp)->_vPtr)[E_PRINT_LONG_AND_CHAR]))(pp,123,'\0');
     printf("\n--- end runAsPrePostFixerRef() ---\n\n");
 }
 
-void runAsPrePostDollarFixerRef(const PrePostDollarFixer& pp)
+void runAsPrePostDollarFixerRef(PrePostDollarFixer* pp)
 {
     printf("\n--- start runAsPrePostDollarFixerRef() ---\n\n");
 
-    pp.printT(123);
+    printPrePostDollarFixerInt(pp,123,'$');
 
     printf("\n--- end runAsPrePostDollarFixerRef() ---\n\n");
 }
 
-void runAsPrePostDollarFixerObj(const PrePostDollarFixer pp)
+void runAsPrePostDollarFixerObj(PrePostDollarFixer pp)
 {
     printf("\n--- start runAsPrePostDollarFixerObj() ---\n\n");
 
-    pp.print(123);
+    printPrePostDollarFixerInt(&pp,123,'$');
 
     printf("\n--- end runAsPrePostDollarFixerObj() ---\n\n");
 }
 
-void runAsPrePostHashFixerRef(const PrePostHashFixer& pp)
+void runAsPrePostHashFixerRef(PrePostHashFixer* pp)
 {
     printf("\n--- start runAsPrePostHashFixerRef() ---\n\n");
 
-    pp.printT(123);
+    printPrePostHashFixerInt(pp,123,'#');
 
     printf("\n--- end runAsPrePostHashFixerRef() ---\n\n");
 }
 
 void doMultiplier()
 {
+    Multiplier m1;
+    Multiplier m2;
+    Multiplier m3;
+    Multiplier m4;
     printf("\n--- start doMultiplier() ---\n\n");
 
-    Multiplier m1(3);
-    Multiplier m2 = 5;
-    Multiplier m3 = m1;
-    Multiplier m4(m2);
+    DefaultTextFormatterC((DefaultTextFormatter *) &m1);
+    m1.m_times = 3;
+    ((TextFormatter*)&m1)->_vPtr = MultiplierVTable;
+    printf("--- Multiplier CTOR: times = %d\n", m1.m_times);
 
-    m1.print("abc ");
-    m2.print("abc ");
-    m3.print("abc ");
-    m4.print("abc ");
+    DefaultTextFormatterC((DefaultTextFormatter *) &m2);
+    m2.m_times = 5;
+    ((TextFormatter*)&m2)->_vPtr = MultiplierVTable;
+    printf("--- Multiplier CTOR: times = %d\n", m2.m_times);
+
+    MultiplierCC(&m3,&m1);
+    MultiplierCC(&m4,&m2);
+
+    printMultiplier(&m1,"abc ");
+    printMultiplier(&m2,"abc ");
+    printMultiplier(&m3,"abc ");
+    printMultiplier(&m4,"abc ");
 
     printf("\n--- start doMultiplier() ---\n\n");
+    MultiplierD(&m4);
+    MultiplierD(&m3);
+    MultiplierD(&m2);
+    MultiplierD(&m1);
+
 }
 
 void doFormatterArray()
 {
+
+    DefaultTextFormatter formatters[3];
+    int i;
+    PrePostDollarFixer temp1;
+    Multiplier temp2;
+    PrePostChecker temp3;
+
     printf("\n--- start doFormatterArray() ---\n\n");
 
-    DefaultTextFormatter formatters[] =
+    PrePostDollarFixerC(&temp1, "!!! ", " !!!");
+    DefaultTextFormatterCC(formatters, (const DefaultTextFormatter *) &temp1);
+    PrePostDollarFixerD(&temp1);
+
+    DefaultTextFormatterC((DefaultTextFormatter *) &temp2);
+    ((Multiplier*)(&temp2))->m_times = 4;
+    ((TextFormatter*)(&temp2))->_vPtr = MultiplierVTable;
+    printf("--- Multiplier CTOR: times = %d\n", ((Multiplier*)(&temp2))->m_times);
+    DefaultTextFormatterCC(formatters+1, (const DefaultTextFormatter *) &temp2);
+    MultiplierD(&temp2);
+
+    PrePostCheckerC(&temp3);
+    DefaultTextFormatterCC(formatters+2, (const DefaultTextFormatter *) &temp1);
+    PrePostCheckerD(&temp3);
+
+    for (i = 0; i < 3; ++i)
     {
-        PrePostDollarFixer("!!! ", " !!!"),
-        Multiplier(4),
-        PrePostChecker()
-    };
+        printDefaultText(formatters+i,"Hello World");
 
-    for (int i = 0; i < 3; ++i)
-        formatters[i].print("Hello World!");
-
+    }
     printf("\n--- end doFormatterArray() ---\n\n");
+    DefaultTextFormatterD(formatters+2);
+    DefaultTextFormatterD(formatters+1);
+    DefaultTextFormatterD(formatters);
+
 }
 
 void doFormatterPtrs()
 {
+    DefaultTextFormatter* pfmt[3];
+    int i;
     printf("\n--- start doFormatterPtrs() ---\n\n");
 
-    DefaultTextFormatter* pfmt[] =
+    pfmt[0] = malloc(sizeof(PrePostDollarFixer));
+    PrePostDollarFixerC((PrePostDollarFixer*)pfmt[0],"!!! ", " !!!");
+
+    pfmt[1] = malloc(sizeof(Multiplier));
+    DefaultTextFormatterC((DefaultTextFormatter *) pfmt[1]);
+    ((Multiplier*)pfmt[1])->m_times = 4;
+    ((TextFormatter*)pfmt[1])->_vPtr = MultiplierVTable;
+    printf("--- Multiplier CTOR: times = %d\n", ((Multiplier*)pfmt[1])->m_times);
+
+    pfmt[2] = malloc(sizeof(PrePostChecker));
+    PrePostCheckerC((PrePostChecker*)pfmt[2]);
+
+
+    for (i = 1; i < 3; ++i)
     {
-        new PrePostDollarFixer("!!! ", " !!!"),
-        new Multiplier(4),
-        new PrePostChecker()
-    };
+        ((pPrintCHar)((((TextFormatter*)pfmt[i])->_vPtr)[E_PRINT_CONST_CHAR]))(pfmt[i],"Hello World!");
+    }
 
-    for (int i = 0; i < 3; ++i)
-        pfmt[i]->print("Hello World!");
-
-    for (int i = 2; i >= 0; --i)
-        delete pfmt[i];
-
+    for (i = 2; i >= 0; --i)
+    {
+        ((pDCtor)((((TextFormatter*)pfmt[i])->_vPtr)[E_DTOR]))(pfmt[i]);
+        free(pfmt[i]);
+    }
     printf("\n--- end doFormatterPtrs() ---\n\n");
 }
 
 void doFormatterDynamicArray()
 {
+    DefaultTextFormatter* formatters;
+    int i;
     printf("\n--- start doFormatterDynamicArray() ---\n\n");
+    formatters = generateFormatterArray();
 
-    DefaultTextFormatter* formatters = generateFormatterArray();
-    
-    for (int i = 0; i < 3; ++i)
-        formatters[i].print("Hello World!");
+    for (i = 0; i < 3; ++i)
+    {
+        printDefaultText(formatters+i,"Hello World");
+    }
 
-    delete[] formatters;
+    for (i = 2; i >= 0; --i)
+    {
+        DefaultTextFormatterD(formatters+i);
+    }
+    free(formatters);
+
 
     printf("\n--- start doFormatterDynamicArray() ---\n\n");
 }
 
 int main()
 {
+    PrePostHashFixer hfix;
+    PrePostDollarFixer temp1;
     printf("\n--- Start main() ---\n\n");
 
     doPrePostFixer();
     doPrePostDollarFixer();
     doPrePostFloatDollarFixer();
     doPrePostChecker();
-
-    PrePostHashFixer hfix;
-    runAsPrePostFixerRef(hfix);
-    runAsPrePostDollarFixerRef(hfix);
-    runAsPrePostDollarFixerObj(hfix);
-    runAsPrePostHashFixerRef(hfix);
+    PrePostHashFixerC(&hfix,4);
+    runAsPrePostFixerRef((PrePostFixer *) &hfix);
+    runAsPrePostDollarFixerRef((PrePostDollarFixer *) &hfix);
+    PrePostDollarFixerCC(&temp1, (const PrePostDollarFixer *) &hfix);
+    runAsPrePostDollarFixerObj(temp1);
+    runAsPrePostHashFixerRef(&hfix);
 
     doMultiplier();
 
@@ -187,6 +262,7 @@ int main()
 
     printf("\n--- End main() ---\n\n");
 
+    PrePostHashFixerD(&hfix);
     return 0;
 }
 
