@@ -11,10 +11,59 @@ void _Z14doPrePostFixerv()
 
     _ZN12PrePostFixerC2EPKcS1_(&angleBrackets, "<<< ", " >>>");
     _ZNK12PrePostFixer5printEPKc(&angleBrackets, "Hello World!");
-    _ZNK12PrePostFixer5printElc(&angleBrackets, -777, '\0');
-    _ZNK12PrePostFixer5printElc(&angleBrackets, 350, '#');
 
-    _ZNK12PrePostFixer5printElc(&angleBrackets, (long) 3.14, '\0');
+    {
+        printf("%-60s | ", "[PrePostFixer::print(long, char)]");
+        printf("-->\n");
+
+        /*if ('\0')
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long, char)]");
+            printf("%s%c%ld%s\n", angleBrackets.m_pre, '\0', (long)-777, angleBrackets.m_post);
+        }
+        else*/
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long)]");
+            printf("%s%ld%s\n", angleBrackets.m_pre, (long)-777, angleBrackets.m_post);}
+
+    }
+    /*_ZNK12PrePostFixer5printElc(&angleBrackets, -777, '\0');*/
+
+    {
+        printf("%-60s | ", "[PrePostFixer::print(long, char)]");
+        printf("-->\n");
+
+       /* if ('#')
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long, char)]");
+            printf("%s%c%ld%s\n", angleBrackets.m_pre, '#',  (long)350, angleBrackets.m_post);
+        }
+        else*/
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long)]");
+            printf("%s%ld%s\n", angleBrackets.m_pre,  (long)350, angleBrackets.m_post);
+        }
+    }
+
+    /*_ZNK12PrePostFixer5printElc(&angleBrackets, 350, '#');*/
+
+    {
+        printf("%-60s | ", "[PrePostFixer::print(long, char)]");
+        printf("-->\n");
+
+        /*if ('\0')
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long, char)]");
+            printf("%s%c%ld%s\n", angleBrackets.m_pre, '\0', (long) 3.14, angleBrackets.m_post);
+        }
+        else*/
+        {
+            printf("%-60s | ","[PrePostFixer::print_num(long)]");
+            printf("%s%ld%s\n", angleBrackets.m_pre, (long) 3.14, angleBrackets.m_post);
+        }
+    }
+
+    /*_ZNK12PrePostFixer5printElc(&angleBrackets, (long) 3.14, '\0');*/
 
     printf("\n--- end doPrePostFixer() ---\n\n");
     _ZN12PrePostFixerD0Ev(&angleBrackets);
@@ -138,10 +187,27 @@ void _Z12doMultiplierv()
     _ZNK10Multiplier5printEPKc(&m4, "abc ");
 
     printf("\n--- start _Z12doMultiplierv() ---\n\n");
-    _ZN10MultiplierD0Ev(&m4);
+
+    printf("--- Multiplier DTOR: times = %d\n", m4.m_times);
+    ((TextFormatter*)&m4)->_vPtr = DefaultTextFormatterVTable;
+    _ZN20DefaultTextFormatterD0Ev(&m4);
+
+    printf("--- Multiplier DTOR: times = %d\n", m3.m_times);
+    ((TextFormatter*)&m3)->_vPtr = DefaultTextFormatterVTable;
+    _ZN20DefaultTextFormatterD0Ev(&m3);
+
+    printf("--- Multiplier DTOR: times = %d\n", m2.m_times);
+    ((TextFormatter*)&m2)->_vPtr = DefaultTextFormatterVTable;
+    _ZN20DefaultTextFormatterD0Ev(&m2);
+
+    printf("--- Multiplier DTOR: times = %d\n", m1.m_times);
+    ((TextFormatter*)&m1)->_vPtr = DefaultTextFormatterVTable;
+    _ZN20DefaultTextFormatterD0Ev(&m1);
+
+    /*_ZN10MultiplierD0Ev(&m4);
     _ZN10MultiplierD0Ev(&m3);
     _ZN10MultiplierD0Ev(&m2);
-    _ZN10MultiplierD0Ev(&m1);
+    _ZN10MultiplierD0Ev(&m1);*/
 
 }
 
@@ -165,7 +231,12 @@ void _Z16doFormatterArrayv()
     ((TextFormatter*)(&temp2))->_vPtr = MultiplierVTable;
     printf("--- Multiplier CTOR: times = %d\n", ((Multiplier*)(&temp2))->m_times);
     _ZN20DefaultTextFormatterC1ERKS_(formatters + 1, (const DefaultTextFormatter *) &temp2);
-    _ZN10MultiplierD0Ev(&temp2);
+
+    printf("--- Multiplier DTOR: times = %d\n", temp2.m_times);
+    ((TextFormatter*)&temp2)->_vPtr = DefaultTextFormatterVTable;
+    _ZN20DefaultTextFormatterD0Ev(&temp2);
+
+    /*_ZN10MultiplierD0Ev(&temp2);*/
 
     _ZN14PrePostCheckerC1Ev(&temp3);
     _ZN20DefaultTextFormatterC1ERKS_(formatters + 2, (const DefaultTextFormatter *) &temp1);
@@ -174,7 +245,6 @@ void _Z16doFormatterArrayv()
     for (i = 0; i < 3; ++i)
     {
         _ZNK20DefaultTextFormatter5printEPKc(formatters + i, "Hello World");
-
     }
     printf("\n--- end doFormatterArray() ---\n\n");
     _ZN20DefaultTextFormatterD0Ev(formatters + 2);
@@ -202,7 +272,7 @@ void _Z15doFormatterPtrsv()
     _ZN14PrePostCheckerC1Ev((PrePostChecker *) pfmt[2]);
 
 
-    for (i = 1; i < 3; ++i)
+    for (i = 0; i < 3; ++i)
     {
         ((pPrintKChar)((((TextFormatter*)pfmt[i])->_vPtr)[E_PRINT_CONST_CHAR]))(pfmt[i], "Hello World!");
     }
@@ -240,7 +310,7 @@ void _Z23doFormatterDynamicArrayv()
 int main()
 {
     PrePostHashFixer hfix;
-    PrePostDollarFixer temp1;
+    PrePostDollarFixer temp1,temp2;
     printf("\n--- Start main() ---\n\n");
 
     _Z14doPrePostFixerv();
@@ -251,6 +321,7 @@ int main()
     _Z20runAsPrePostFixerRefRK12PrePostFixer((PrePostFixer *) &hfix);
     _Z26runAsPrePostDollarFixerRefRK18PrePostDollarFixer((PrePostDollarFixer *) &hfix);
     _ZN18PrePostDollarFixerC2ERKS_(&temp1, (const PrePostDollarFixer *) &hfix);
+    _ZN18PrePostDollarFixerC2ERKS_(&temp2, &temp1);
     _Z26runAsPrePostDollarFixerObj18PrePostDollarFixer(temp1);
     _Z24runAsPrePostHashFixerRefRK16PrePostHashFixer(&hfix);
 

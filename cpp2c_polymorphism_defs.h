@@ -39,7 +39,8 @@ inline void printFunc(const char* fname)
 /*/// TextFormatter ///////////*/
 typedef struct
 {
-    void* (** _vPtr)(void *);
+    /*void* (** _vPtr)(void *)*/
+    generateFunc *_vPtr;
 }TextFormatter;
 
 
